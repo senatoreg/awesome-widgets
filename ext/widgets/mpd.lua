@@ -20,11 +20,10 @@ local function play_pause_toggle()
    if host == nil or port == nil then
       return
    end
-   
 
    local c = assert(sock.connect(host,port))
-    
    local s = c:receive('*l')
+   local status = ""
 
    c:send("status\n")
    while true do
@@ -34,13 +33,16 @@ local function play_pause_toggle()
 	 if k == "state" then
 	    if v == "play" then
 	       c:send("pause\n")
+	       status = "pause"
 	    else
 	       c:send("play\n")
+	       status = "start"
 	    end
 	 end
        end
    end
    c:close()
+   return status
 end
 
 local function play_stop_toggle()
@@ -48,10 +50,9 @@ local function play_stop_toggle()
       return
    end
    
-
    local c = assert(sock.connect(host,port))
-    
    local s = c:receive('*l')
+   local status = ""
 
    c:send("status\n")
    while true do
@@ -61,13 +62,16 @@ local function play_stop_toggle()
 	 if k == "state" then
 	    if v == "play" then
 	       c:send("stop\n")
+	       status = "stop"
 	    else
 	       c:send("play\n")
+	       status = "start"
 	    end
 	 end
        end
    end
    c:close()
+   return status
 end
 
 -- {{{ MPD widget type
