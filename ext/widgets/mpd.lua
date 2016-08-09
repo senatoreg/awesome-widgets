@@ -15,6 +15,35 @@ port = nil
 -- vicious.widgets.mpd
 local mpd = {}
 
+local function currentsong()
+    local mpd_state  = {
+        ["{Artist}"] = "N/A",
+        ["{Title}"]  = "N/A",
+        ["{Album}"]  = "N/A",
+    }
+
+    if host == nil or port == nil then
+      return
+   end
+
+   local c = assert(sock.connect(host,port))
+   local s = c:receive('*l')
+   local song = ""
+
+   c:send("currentsong\n")
+   while true do
+      s = c:receive('*l')
+      if s == "OK" then break end
+      for k, v in string.gmatch(s, "([%w]+):[%s](.*)$") do
+	 if     k == "Artist" then mpd_state["{"..k.."}"] = helpers.escape(v)
+	 elseif k == "Title"  then mpd_state["{"..k.."}"] = helpers.escape(v)
+	 elseif k == "Album"  then mpd_state["{"..k.."}"] = helpers.escape(v)
+	 end
+      end
+   end
+   c:close()
+   return mpd_state
+end
 
 local function play_pause_toggle()
    if host == nil or port == nil then
@@ -131,4 +160,5 @@ end
 
 mpd.play_pause_toggle = play_pause_toggle
 mpd.play_stop_toggle = play_stop_toggle
+mpd.currentsong = currentsong
 return setmetatable(mpd, { __call = function(_, ...) return worker(...) end })

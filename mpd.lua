@@ -21,6 +21,18 @@ local buttons = awful.util.table.join(
    end)
 )
 mpdwidget:buttons(buttons)
+mpdtextbox = wibox.widget.textbox()
+mpdtooltip = awful.tooltip({
+      objects = {mpdtextbox},
+      timer_function = function()
+	 song = w.currentsong()
+	 return song["{Artist}"] .. "\n" .. song["{Title}"] .. "\n" .. song["{Album}"]
+--	 mpdtextbox:set_text("Prova")
+--	 mpdtextbox:set_text(song["{Title}"])
+      end,
+})
+mpdtooltip:set_timeout(3)
+mpdtooltip:add_to_object(mpdwidget)
 
 -- Register widget
 vicious.register(mpdwidget, w,
