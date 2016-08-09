@@ -21,8 +21,8 @@ local buttons = awful.util.table.join(
    end)
 )
 mpdwidget:buttons(buttons)
-mpdtextbox = wibox.widget.textbox()
-mpdtooltip = awful.tooltip({
+local mpdtextbox = wibox.widget.textbox()
+local mpdtooltip = awful.tooltip({
       objects = {mpdtextbox},
       timer_function = function()
 	 song = w.currentsong()
