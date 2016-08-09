@@ -27,8 +27,6 @@ mpdtooltip = awful.tooltip({
       timer_function = function()
 	 song = w.currentsong()
 	 return song["{Artist}"] .. "\n" .. song["{Title}"] .. "\n" .. song["{Album}"]
---	 mpdtextbox:set_text("Prova")
---	 mpdtextbox:set_text(song["{Title}"])
       end,
 })
 mpdtooltip:set_timeout(3)
