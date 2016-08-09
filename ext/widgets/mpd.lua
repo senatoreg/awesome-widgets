@@ -60,12 +60,12 @@ local function play_stop_toggle()
       if s == "OK" then break end
       for k, v in string.gmatch(s, "([%w]+):[%s](.*)$") do
 	 if k == "state" then
-	    if v == "play" then
-	       c:send("stop\n")
-	       status = "stop"
-	    else
+	    if v == "stop" then
 	       c:send("play\n")
 	       status = "start"
+	    else
+	       c:send("stop\n")
+	       status = "stop"
 	    end
 	 end
        end
