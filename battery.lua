@@ -1,4 +1,6 @@
+local awful = require("awful")
 local wibox = require("wibox")
+local naughty = require("naughty")
 local lgi = require 'lgi'
 local Gtk = lgi.Gtk
 local GtkIconTheme = Gtk.IconTheme.get_default()
@@ -16,8 +18,17 @@ local GtkIconTheme = Gtk.IconTheme.get_default()
 -- battery-empty-symbolic
 -- battery-missing-symbolic
 
-
 local battery = wibox.widget.imagebox()
+local batterytextbox = wibox.widget.textbox()
+local batterytooltip = awful.tooltip({
+      objects = {batterytextbox},
+      timer_function = function()
+	 local b = vicious.widgets.bat("", "BAT0")
+	 return "Battery: " .. b[2] .. "% - remaining: " .. b[3]
+      end,
+})
+batterytooltip:set_timeout(3)
+batterytooltip:add_to_object(battery)
 
 -- Register widget
 vicious.register(battery, vicious.widgets.bat,
@@ -55,8 +66,10 @@ vicious.register(battery, vicious.widgets.bat,
         percentage = "caution"
     elseif args[2] < 20 and args[2] >= 10 then
         percentage = "caution"
+	-- naughty.notify({ title="Battery Low.", text="Battery level " .. args[2] .. "%", timeout=3 })
     elseif args[2] < 10 then
-        percentage = "empty"
+       percentage = "empty"
+       naughty.notify({ title="Battery Empty!", text="Battery level " .. args[2] .. "%", timeout=3, bg="#ff0000", fg="#000000" })
     end
       current = prefix .. percentage .. state .. suffix
       if last ~= current then
