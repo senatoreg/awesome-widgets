@@ -1,61 +1,41 @@
--- {{{ Grab environment
-local tonumber = tonumber
-local io = { popen = io.popen }
-local setmetatable = setmetatable
-local string = { gmatch = string.gmatch }
-local helpers = require("vicious.helpers")
-local sock = require("luasocket")
--- }}}
+local awful = require("awful")
+local wibox = require("wibox")
+local lgi = require 'lgi'
+local Gtk = lgi.Gtk
+local GtkIconTheme = Gtk.IconTheme.get_default()
+local w = require("ext.widgets.mpd")
 
+-- Initialize widget
+-- mpdwidget = wibox.widget.textbox()
+mpdwidget = wibox.widget.imagebox()
+local buttons = awful.util.table.join(
+   awful.button({ }, 1, function()
+	 w.play_pause_toggle()
+   end),
+   awful.button({ }, 3, function()
+	 w.play_stop_toggle()
+   end)
+)
+mpdwidget:buttons(buttons)
 
--- Mpd: provides Music Player Daemon information
--- vicious.widgets.mpd
-local mpd = {}
+-- Register widget
+vicious.register(mpdwidget, w,
+		 function (widget, args)
+		    local last = ""
+		    local state = stop
+		    local current = args["{state}"]
+		    if last ~= current then
+		       if args["{state}"] == "Stop" then
+			  state = "stop"
+		       elseif args["{state}"] == "Pause" then
+			  state = "pause"
+		       elseif args["{state}"] == "Play" then
+			  state = "start"
+		       end
+		       local GtkIconInfo = GtkIconTheme:lookup_icon("media-playback-" .. state, 10, 0)
+		       widget:set_image( GtkIconInfo:get_filename())
+		       last = current
+		    end
+		 end, 10)
 
-
--- {{{ MPD widget type
-local function worker(format, warg)
-    local mpd_state  = {
-        ["{volume}"] = 0,
-        ["{state}"]  = "N/A",
-        ["{Artist}"] = "N/A",
-        ["{Title}"]  = "N/A",
-        ["{Album}"]  = "N/A",
-        ["{Genre}"]  = "N/A",
-        --["{Name}"] = "N/A",
-        --["{file}"] = "N/A",
-    }
-
-    -- Fallback to MPD defaults
-    local pass = warg and (warg.password or warg[1]) or "\"\""
-    local host = warg and (warg.host or warg[2]) or "127.0.0.1"
-    local port = warg and (warg.port or warg[3]) or "6600"
-
-    -- Construct MPD client options
-    c = assert(sock.connect(host,port))
-    c:send("status")
-    
-    -- Get data from MPD server
-    local f = receive(c)
-
-    for line in f:lines() do
-        for k, v in string.gmatch(line, "([%w]+):[%s](.*)$") do
-            if     k == "volume" then mpd_state["{"..k.."}"] = v and tonumber(v)
-            elseif k == "state"  then mpd_state["{"..k.."}"] = helpers.capitalize(v)
-            elseif k == "Artist" then mpd_state["{"..k.."}"] = helpers.escape(v)
-            elseif k == "Title"  then mpd_state["{"..k.."}"] = helpers.escape(v)
-            elseif k == "Album"  then mpd_state["{"..k.."}"] = helpers.escape(v)
-            elseif k == "Genre"  then mpd_state["{"..k.."}"] = helpers.escape(v)
-            --elseif k == "Name" then mpd_state["{"..k.."}"] = helpers.escape(v)
-            --elseif k == "file" then mpd_state["{"..k.."}"] = helpers.escape(v)
-            end
-        end
-    end
-    c:close()
-
-    return mpd_state
-end
--- }}}
-
-return setmetatable(mpd, { __call = function(_, ...) return worker(...) end })
-
+return mpdwidget
