@@ -15,36 +15,6 @@ port = nil
 -- vicious.widgets.mpd
 local mpd = {}
 
-local function currentsong()
-    local mpd_state  = {
-        ["{Artist}"] = "N/A",
-        ["{Title}"]  = "N/A",
-        ["{Album}"]  = "N/A",
-    }
-
-    if host == nil or port == nil then
-      return
-   end
-
-   local c = assert(sock.connect(host,port))
-   local s = c:receive('*l')
-   local song = ""
-
-   c:send("currentsong\n")
-   while true do
-      s = c:receive('*l')
-      if s == "OK" then break end
-      for k, v in string.gmatch(s, "([%w]+):[%s](.*)$") do
-	 if     k == "Artist" then mpd_state["{"..k.."}"] = helpers.escape(v)
-	 elseif k == "Title"  then mpd_state["{"..k.."}"] = helpers.escape(v)
-	 elseif k == "Album"  then mpd_state["{"..k.."}"] = helpers.escape(v)
-	 end
-      end
-   end
-   c:close()
-   return mpd_state
-end
-
 local function play_pause_toggle()
    if host == nil or port == nil then
       return
@@ -53,6 +23,9 @@ local function play_pause_toggle()
    local c = assert(sock.connect(host,port))
    local s = c:receive('*l')
    local status = ""
+   
+   c:send("password " .. pass .. "\n")
+   s = c:receive('*l')
 
    c:send("status\n")
    while true do
@@ -83,6 +56,9 @@ local function play_stop_toggle()
    local s = c:receive('*l')
    local status = ""
 
+   c:send("password " .. pass .. "\n")
+   s = c:receive('*l')
+
    c:send("status\n")
    while true do
       s = c:receive('*l')
@@ -97,10 +73,29 @@ local function play_stop_toggle()
 	       status = "stop"
 	    end
 	 end
-       end
+      end
    end
    c:close()
    return status
+end
+
+local function idle_player()
+   if host == nil or port == nil then
+      return
+   end
+   
+   local c = assert(sock.connect(host,port))
+   local s = c:receive('*l')
+   local status = ""
+
+   c:send("password " .. pass .. "\n")
+   s = c:receive('*l')
+
+   c:send("idle player\n")
+   s = c:receive('*l')
+
+   c:close()
+   return
 end
 
 -- {{{ MPD widget type
@@ -125,6 +120,9 @@ local function worker(format, warg)
     local c = assert(sock.connect(host,port))
     
     local s = c:receive('*l')
+
+    c:send("password " .. pass .. "\n")
+    s = c:receive('*l')
 
     c:send("status\n")
     while true do
@@ -160,5 +158,5 @@ end
 
 mpd.play_pause_toggle = play_pause_toggle
 mpd.play_stop_toggle = play_stop_toggle
-mpd.currentsong = currentsong
+mpd.idle_player = idle_player
 return setmetatable(mpd, { __call = function(_, ...) return worker(...) end })

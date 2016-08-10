@@ -3,19 +3,19 @@ local wibox = require("wibox")
 local lgi = require 'lgi'
 local Gtk = lgi.Gtk
 local GtkIconTheme = Gtk.IconTheme.get_default()
-local w = require("ext.widgets.mpd")
+local extwidgetsmpd = require("ext.widgets.mpd")
 
 -- Initialize widget
 -- mpdwidget = wibox.widget.textbox()
 mpdwidget = wibox.widget.imagebox()
 local buttons = awful.util.table.join(
    awful.button({ }, 1, function()
-	 local state = w.play_pause_toggle()
+	 local state = extwidgetsmpd.play_pause_toggle()
 	 local GtkIconInfo = GtkIconTheme:lookup_icon("media-playback-" .. state .. "-symbolic", 24, 0)
 	 mpdwidget:set_image( GtkIconInfo:get_filename())
    end),
    awful.button({ }, 3, function()
-	 local state = w.play_stop_toggle()
+	 local state = extwidgetsmpd.play_stop_toggle()
 	 local GtkIconInfo = GtkIconTheme:lookup_icon("media-playback-" .. state .. "-symbolic", 24, 0)
 	 mpdwidget:set_image( GtkIconInfo:get_filename())
    end)
@@ -25,7 +25,7 @@ local mpdtextbox = wibox.widget.textbox()
 local mpdtooltip = awful.tooltip({
       objects = {mpdtextbox},
       timer_function = function()
-	 song = w.currentsong()
+	 song = extwidgetsmpd("",nil)
 	 return song["{Artist}"] .. "\n" .. song["{Title}"] .. "\n" .. song["{Album}"]
       end,
 })
@@ -33,7 +33,7 @@ mpdtooltip:set_timeout(3)
 mpdtooltip:add_to_object(mpdwidget)
 
 -- Register widget
-vicious.register(mpdwidget, w,
+vicious.register(mpdwidget, extwidgetsmpd,
 		 function (widget, args)
 		    local last = ""
 		    local state = stop
