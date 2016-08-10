@@ -11,12 +11,12 @@ mpdwidget = wibox.widget.imagebox()
 local buttons = awful.util.table.join(
    awful.button({ }, 1, function()
 	 local state = w.play_pause_toggle()
-	 local GtkIconInfo = GtkIconTheme:lookup_icon("media-playback-" .. state, 10, 0)
+	 local GtkIconInfo = GtkIconTheme:lookup_icon("media-playback-" .. state .. "-symbolic", 10, 0)
 	 mpdwidget:set_image( GtkIconInfo:get_filename())
    end),
    awful.button({ }, 3, function()
 	 local state = w.play_stop_toggle()
-	 local GtkIconInfo = GtkIconTheme:lookup_icon("media-playback-" .. state, 10, 0)
+	 local GtkIconInfo = GtkIconTheme:lookup_icon("media-playback-" .. state .. "-symbolic", 10, 0)
 	 mpdwidget:set_image( GtkIconInfo:get_filename())
    end)
 )
@@ -46,7 +46,7 @@ vicious.register(mpdwidget, w,
 		       elseif args["{state}"] == "Play" then
 			  state = "start"
 		       end
-		       local GtkIconInfo = GtkIconTheme:lookup_icon("media-playback-" .. state, 10, 0)
+		       local GtkIconInfo = GtkIconTheme:lookup_icon("media-playback-" .. state .. "-symbolic", 10, 0)
 		       widget:set_image( GtkIconInfo:get_filename())
 		       last = current
 		    end
