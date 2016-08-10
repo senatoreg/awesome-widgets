@@ -73,7 +73,7 @@ vicious.register(battery, vicious.widgets.bat,
     end
       current = prefix .. percentage .. state .. suffix
       if last ~= current then
-          local GtkIconInfo = GtkIconTheme:lookup_icon(prefix .. percentage .. state .. suffix, 10, 0 )
+          local GtkIconInfo = GtkIconTheme:lookup_icon(prefix .. percentage .. state .. suffix, 24, 0 )
           widget:set_image( GtkIconInfo:get_filename() )
           last = current
       end
