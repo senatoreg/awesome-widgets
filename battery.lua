@@ -24,7 +24,7 @@ local batterytooltip = awful.tooltip({
       objects = {batterytextbox},
       timer_function = function()
 	 local b = vicious.widgets.bat("", "BAT0")
-	 return "Battery: " .. b[2] .. "% - remaining: " .. b[3]
+	 return "Level: " .. b[2] .. "%\nRemaining: " .. b[3]
       end,
 })
 batterytooltip:set_timeout(3)
