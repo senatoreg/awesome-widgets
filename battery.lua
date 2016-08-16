@@ -69,7 +69,7 @@ vicious.register(battery, vicious.widgets.bat,
 	-- naughty.notify({ title="Battery Low.", text="Battery level " .. args[2] .. "%", timeout=3 })
     elseif args[2] < 10 then
        percentage = "empty"
-       naughty.notify({ title="Battery Empty!", text="Battery level " .. args[2] .. "%", timeout=3, bg="#ff0000", fg="#000000" })
+       if state ~= "-charging" then naughty.notify({ title="Battery Empty!", text="Battery level " .. args[2] .. "%\nRemaining ".. args[3], timeout=3, bg="#ff0000", fg="#000000" }) end
     end
       current = prefix .. percentage .. state .. suffix
       if last ~= current then
