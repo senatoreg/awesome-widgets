@@ -63,7 +63,7 @@ vicious.register(battery, vicious.widgets.bat,
     elseif args[2] < 40 and args[2] >= 30 then
         percentage = "low"
     elseif args[2] < 30 and args[2] >= 20 then
-        percentage = "caution"
+        percentage = "low"
     elseif args[2] < 20 and args[2] >= 10 then
         percentage = "caution"
 	-- naughty.notify({ title="Battery Low.", text="Battery level " .. args[2] .. "%", timeout=3 })
