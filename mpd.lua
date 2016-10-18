@@ -14,6 +14,12 @@ local buttons = awful.util.table.join(
 	 local GtkIconInfo = GtkIconTheme:lookup_icon("media-playback-" .. state .. "-symbolic", 24, 0)
 	 mpdwidget:set_image( GtkIconInfo:get_filename())
    end),
+   awful.button({ }, 4, function()
+	 local next = extwidgetsmpd.next_song()
+   end),
+   awful.button({ }, 5, function()
+	 local next = extwidgetsmpd.prev_song()
+   end),
    awful.button({ }, 3, function()
 	 local state = extwidgetsmpd.play_stop_toggle()
 	 local GtkIconInfo = GtkIconTheme:lookup_icon("media-playback-" .. state .. "-symbolic", 24, 0)

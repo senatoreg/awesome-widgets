@@ -79,6 +79,48 @@ local function play_stop_toggle()
    return status
 end
 
+local function next_song()
+   if host == nil or port == nil then
+      return
+   end
+   
+   local c = assert(sock.connect(host,port))
+   local s = c:receive('*l')
+   local status = ""
+
+   c:send("password " .. pass .. "\n")
+   s = c:receive('*l')
+
+   c:send("next\n")
+   while true do
+      s = c:receive('*l')
+      if s == "OK" then break end
+   end
+   c:close()
+   return status
+end
+
+local function prev_song()
+   if host == nil or port == nil then
+      return
+   end
+   
+   local c = assert(sock.connect(host,port))
+   local s = c:receive('*l')
+   local status = ""
+
+   c:send("password " .. pass .. "\n")
+   s = c:receive('*l')
+
+   c:send("previous\n")
+   while true do
+      s = c:receive('*l')
+      if s == "OK" then break end
+   end
+   c:close()
+   return status
+end
+
 local function idle_player()
    if host == nil or port == nil then
       return
@@ -158,5 +200,7 @@ end
 
 mpd.play_pause_toggle = play_pause_toggle
 mpd.play_stop_toggle = play_stop_toggle
+mpd.next_song = next_song
+mpd.prev_song = prev_song
 mpd.idle_player = idle_player
 return setmetatable(mpd, { __call = function(_, ...) return worker(...) end })
